@@ -1,0 +1,8 @@
+-r requirements.txt
+
+pytest>=8.0
+pytest-django>=4.8
+flake8>=7.0
+black>=24.0
+isort>=5.13
+coverage>=7.4

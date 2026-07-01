@@ -1,0 +1,104 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  lint:
+    name: Lint (flake8 + black --check)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Run flake8
+        run: flake8 .
+
+      - name: Check formatting with black
+        run: black --check .
+
+  test:
+    name: Test (Django + MySQL)
+    runs-on: ubuntu-latest
+    needs: lint
+
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: root_password
+          MYSQL_DATABASE: recruitment_screening_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    env:
+      DJANGO_SECRET_KEY: ci-test-secret-key
+      DJANGO_DEBUG: "False"
+      DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1
+      DB_ENGINE: mysql
+      DB_NAME: recruitment_screening_test
+      DB_USER: root
+      DB_PASSWORD: root_password
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install system dependencies for mysqlclient
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y default-libmysqlclient-dev pkg-config
+
+      - name: Install Python dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Wait for MySQL
+        run: |
+          until mysqladmin ping -h 127.0.0.1 -P 3306 -u root -proot_password --silent; do
+            echo "Waiting for MySQL..."
+            sleep 2
+          done
+
+      - name: Run migrations
+        run: python manage.py migrate --noinput
+
+      - name: Run tests with coverage
+        run: |
+          coverage run manage.py test
+          coverage report
+
+  # Placeholder for future deployment. Once a hosting target is chosen
+  # (e.g. Docker + VPS, Render/Railway, or AWS), add a `deploy` job here
+  # that runs after `test` succeeds on the main branch, e.g.:
+  #
+  # deploy:
+  #   name: Deploy
+  #   runs-on: ubuntu-latest
+  #   needs: test
+  #   if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - ...deployment steps for your chosen platform...
