@@ -14,21 +14,16 @@
                 <i class="fas fa-arrow-left"></i> Back
             </a>
         </div>
-        <div class="search-box">
+        <form class="search-box" hx-get="{% url 'track_application' %}"
+            hx-target="#track-result-container" hx-swap="innerHTML" hx-include="[name='application_id']">
             <input
                 type="text"
                 name="application_id"
-                placeholder="Example: APP-1001">
-            <button
-                class="btn btn-primary btn-track"
-                hx-get="{% url 'track_application' %}"
-                hx-include="[name='application_id']"
-                hx-target="#track-result-container"
-                hx-swap="innerHTML">
+                placeholder="Enter Application ID">
+            <button type="submit">
                 Track Status
             </button>
-        </div>
+        </form>
     <div id="track-result-container"></div>
 </main>
-
 {% endblock %}

@@ -1,7 +1,6 @@
 {% extends "home.html" %}
 {% load static %}
 {% block body %}
-
 <main class="main-content-wide">
     <div class="job-detail-hero">
         <div class="hero-left">
@@ -43,7 +42,7 @@
                 <h2>Requirements</h2>
 
                 <ul>
-                    {% for requirement in job.requirements.splitlines %}
+                    {% for requirement in job.requirements_list.all %}
                         <li>{{ requirement }}</li>
                     {% empty %}
                         <li>No requirements listed.</li>

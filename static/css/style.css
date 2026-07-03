@@ -224,7 +224,7 @@ body {
 /* Jobs Page Styles */
 .light-bg .bg-container.dim {
     filter: brightness(0.6) blur(5px);
-}
+}       
 
 .page-container, .landing-page {
     width: 90%;
@@ -233,22 +233,6 @@ body {
     min-height: 80vh;
     display: flex;
     flex-direction: column;
-}
-
-.navbar-simple {
-    display: none; /* Deprecated in favor of glass header */
-}
-
-.navbar-simple .nav-link {
-    text-decoration: none;
-    color: #555;
-    font-weight: 600;
-    font-size: 15px;
-    margin-left: 30px;
-}
-
-.navbar-simple .nav-link.active {
-    color: var(--primary);
 }
 
 .main-content-wide {

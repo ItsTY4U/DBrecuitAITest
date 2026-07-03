@@ -1,6 +1,6 @@
 # Create your models here.
 from django.db import models
-
+from uuid import uuid4
 
 class Job(models.Model):
     JOB_TYPES = [
@@ -17,11 +17,7 @@ class Job(models.Model):
     department = models.CharField(max_length=100)
     job_type = models.CharField(max_length=20, choices=JOB_TYPES)
     description = models.TextField(blank=True)
-
-    requirements = models.TextField(blank=True)
-
     posted_date = models.DateField(auto_now_add=True)
-
     status = models.CharField(
         max_length=20,
         choices=STATUS_CHOICES,
@@ -43,3 +39,59 @@ class Requirement(models.Model):
 
     def __str__(self):
         return self.text
+    
+class Application(models.Model):
+    STATUS_CHOICES =[
+        ("pending", "Pending"),
+        ("reviewing","Reviewing"),
+        ("shortlisted","Shortlisted"),
+        ("interview","Interview"),
+        ("rejected", "Rejected"),
+        ("hired","Hired"),
+    ]
+    
+    application_id = models.CharField(
+        max_length=12,
+        unique=True,
+        editable=False
+    )
+    
+    job = models.ForeignKey(
+        Job,
+        on_delete=models.CASCADE,
+        related_name="application"
+    )
+    
+    first_name = models.CharField(max_length=100)
+    middle_initial = models.CharField(max_length=10, blank=True)
+    last_name = models.CharField(max_length=100)
+    
+    email = models.EmailField()
+    phone = models.CharField(max_length=20)
+    
+    resume = models.FileField(
+        upload_to = "resume/"
+    )
+    
+    resume_processed = models.BooleanField(default=False)
+    
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default="pending"
+    )
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def save(self, *args, **kwargs):
+        if not self.application_id:
+            self.application_id = uuid4().hex[:8].upper()
+            
+        super().save(*args, **kwargs)
+        
+    def __str__(self):
+        return f"{self.application_id} - {self.first_name} {self.last_name}"
+    
+    
+    
+    
