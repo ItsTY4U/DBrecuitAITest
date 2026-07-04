@@ -1,13 +1,13 @@
 from django.shortcuts import render
-from .models import Application
+from jobs.models import Application
 
 # Create your views here.
 def track(request):
-    return render(render, "applications/track.html")
+    return render(request, "applications/track.html")
 
 def track_application(request):
-    application_id = reques.GET.get("application_id")
-    application = Application.object.filter(
+    application_id = request.GET.get("application_id")
+    application = Application.objects.filter(
         application_id=application_id
     ).first()
     
