@@ -29,6 +29,10 @@ DEBUG = os.getenv("DJANGO_DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = ["*"]
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://dbrecruitai0-production.up.railway.app",
+]
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -145,7 +149,4 @@ STATICFILES_STORAGE = (
 MEDIA_URL ="/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
-
-load_dotenv()
-
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
