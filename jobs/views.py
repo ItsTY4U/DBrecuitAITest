@@ -39,7 +39,13 @@ def jobs(request):
             f"<pre>{traceback.format_exc()}</pre>",
             status=500
         )
-    
+
+def job_detail(request, id):
+    job = get_object_or_404(Job, id=id)
+    return render(request, "jobs/job_detail.html", {
+        "job": job
+    })  
+
 def apply_job(request, pk):
     job = get_object_or_404(Job, pk=pk)
 
